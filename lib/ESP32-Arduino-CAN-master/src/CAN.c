@@ -108,7 +108,9 @@ static void CAN_read_frame_phy(BaseType_t *higherPriorityTaskWoken) {
 		return;
 	}
 	
+	#ifdef CAN_MESSAGE_TIMESTAMP
 	__frame.time_stamp = esp_timer_get_time();
+	#endif
 
 	// get FIR
 	__frame.FIR.U = MODULE_CAN->MBX_CTRL.FCTRL.FIR.U;

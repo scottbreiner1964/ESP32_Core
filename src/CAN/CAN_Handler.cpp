@@ -1,4 +1,5 @@
 #include <GlobalDefinitions.h>
+#ifdef CAN_HANDLER
 #include <string.h>
 #include <ESP32CAN.h>
 #include <CAN_config.h>
@@ -32,7 +33,6 @@ void CAN_Driver_Setup_Init( void )
   CAN_cfg.tx_queue = xQueueCreate(tx_queue_size, sizeof(CAN_frame_t));
   // Init CAN Module
   ESP32Can.CANInit();
-  Serial.print("NO FORMAT");
 }
 
 void CAN_Receive_Message_Task (void * parameter)
@@ -63,8 +63,6 @@ void CAN_Receive_Message_Task (void * parameter)
             CAN_Receive_Data[i].updated_flag = TRUE;
             memcpy(&(CAN_Receive_Data[i].data_buffer),&(rx_frame.data.u8),8);
             xTaskResumeAll();
-            Serial.print((float)rx_frame.time_stamp/1000000,6);
-            Serial.print("\n");
             break;
           }
         }
@@ -289,4 +287,5 @@ int CAN_QueueTransmitMessage(int index)
 
     return (rtn);
 }
+#endif
 

@@ -72,7 +72,9 @@ typedef struct {
 		uint8_t u8[8];   /**< \brief Payload byte access*/
 		uint32_t u32[2]; /**< \brief Payload u32 access*/
 	} data;
+	#ifdef CAN_MESSAGE_TIMESTAMP
 	int64_t time_stamp;
+	#endif 
 } CAN_frame_t;
 
 typedef enum {

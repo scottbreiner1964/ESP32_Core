@@ -1,6 +1,4 @@
 //
-
-
   struct CAN_Receive_Data_Struct
   {
     unsigned char updated_flag;
@@ -29,15 +27,13 @@
     int command_byte_2;
   };
 
-
-
 /* To add a message:
  *  1. Add the CAN message to the enum can_message_names list see above
  *  2. Add the relevant configuration information to the Receive_CAN_Config array
  *  
  *  NOTE: the enum list and config array need to be in the same order!!!!  If you remove a message make sure it is removed in both spots otherwise the request data API's will be messed up.
  *  
- */
+ */  
 
 const CAN_Receive_Config_Struct Receive_CAN_Config[] =  
 {
