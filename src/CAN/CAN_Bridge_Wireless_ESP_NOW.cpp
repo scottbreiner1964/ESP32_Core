@@ -13,14 +13,17 @@
 
  //#define RICHOCHET
 
+uint8_t espTranferComplete;
 // Set the broadcastAddress to the node your transmitting to
-//uint8_t broadcastAddress[] = {0x58, 0xBF, 0x25, 0x92, 0xF5, 0x98};  
-uint8_t broadcastAddress[] = {0x08, 0x3a, 0xf2, 0x7d, 0x2c, 0x54}; 
+uint8_t broadcastAddress1[] = {0x58, 0xBF, 0x25, 0x92, 0xF5, 0x98};  
+uint8_t broadcastAddress2[] = {0x08, 0x3a, 0xf2, 0x7d, 0x2c, 0x54}; 
 
 esp_now_peer_info_t peerInfo;
+
 // callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 {
+  espTranferComplete = TRUE;
 }
 
 //callback function that will be executed when data is received
@@ -105,14 +108,15 @@ void ESP_NOW_Init(void)
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
   // register first peer
-  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-  if (esp_now_add_peer(&peerInfo) != ESP_OK)
+  memcpy(peerInfo.peer_addr, broadcastAddress1, 6);
+  //if (esp_now_add_peer(&peerInfo) != ESP_OK)
   {
     //
   }
-  else 
+  memcpy(peerInfo.peer_addr, broadcastAddress2, 6);
+  if (esp_now_add_peer(&peerInfo) != ESP_OK)
   {
-
+    //
   }
 }
 

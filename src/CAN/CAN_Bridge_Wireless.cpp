@@ -15,6 +15,8 @@ CAN_device_t CAN_cfg; // CAN Config
 uint8_t esp_transfer_array[250];
 int msg_count;
 
+extern uint8_t espTranferComplete;
+
 
 void CAN_Driver_Setup_Init( void )
 {
@@ -25,6 +27,7 @@ void CAN_Driver_Setup_Init( void )
   CAN_cfg.rx_queue = xQueueCreate(MAX_QUEUE_SIZE, sizeof(CAN_frame_t));
   // Init CAN Module
   ESP32Can.CANInit();
+  espTranferComplete = TRUE;
 }
 
 void CAN_Wireless_Bridge_Receive_Message_Task (void * parameter)
@@ -41,33 +44,38 @@ void CAN_Wireless_Bridge_Receive_Message_Task (void * parameter)
       init_task_ran = TRUE;
     }
 
-    num_queue_items = MAX_QUEUE_SIZE - uxQueueSpacesAvailable(CAN_cfg.rx_queue);  // total items in the queue
-   // Serial.println(num_queue_items);
-
-    if (num_queue_items != 0) // there are CAN messages in the receive queue so start transmitting over ESP_NOW
+    if (1)
     {
-      msg_count = 0;
-      if (num_queue_items <= MAX_NUM_MESSAGE_PER_ESPNOW_TRANSFER)
+      espTranferComplete = FALSE;
+    
+      num_queue_items = MAX_QUEUE_SIZE - uxQueueSpacesAvailable(CAN_cfg.rx_queue);  // total items in the queue
+    // Serial.println(num_queue_items);
+
+      if (num_queue_items != 0) // there are CAN messages in the receive queue so start transmitting over ESP_NOW
       {
-        // the number of items in the CAN receive queue can be transferred in a single ESP_NOW message packet
-        for (i = 0; i < num_queue_items; i++)
+        msg_count = 0;
+        if (num_queue_items <= MAX_NUM_MESSAGE_PER_ESPNOW_TRANSFER)
         {
-          xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 0);
-          memcpy(&(esp_transfer_array[msg_count * sizeof(rx_frame)]), (uint8_t *)&rx_frame, sizeof(rx_frame) - 8);
-          msg_count++;
+          // the number of items in the CAN receive queue can be transferred in a single ESP_NOW message packet
+          for (i = 0; i < num_queue_items; i++)
+          {
+            xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 0);
+            memcpy(&(esp_transfer_array[msg_count * sizeof(rx_frame)]), (uint8_t *)&rx_frame, sizeof(rx_frame) - 8);
+            msg_count++;
+          }
+          esp_now_send(0, (uint8_t *)&esp_transfer_array, msg_count * sizeof(rx_frame));
         }
-        esp_now_send(0, (uint8_t *)&esp_transfer_array, msg_count * sizeof(rx_frame));
-      }
-      else
-      {
-        // the number of items in the CAN receive queue cannot be transferred in a single ESP_NOW message packet
-        for (i = 0; i < MAX_NUM_MESSAGE_PER_ESPNOW_TRANSFER; i++)
+        else
         {
-          xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 0);
-          memcpy(&(esp_transfer_array[msg_count * sizeof(rx_frame)]), (uint8_t *)&rx_frame, sizeof(rx_frame));
-          msg_count++;
+          // the number of items in the CAN receive queue cannot be transferred in a single ESP_NOW message packet
+          for (i = 0; i < MAX_NUM_MESSAGE_PER_ESPNOW_TRANSFER; i++)
+          {
+            xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 0);
+            memcpy(&(esp_transfer_array[msg_count * sizeof(rx_frame)]), (uint8_t *)&rx_frame, sizeof(rx_frame));
+            msg_count++;
+          }
+          esp_now_send(0, (uint8_t *)&esp_transfer_array, msg_count * sizeof(rx_frame));
         }
-        esp_now_send(0, (uint8_t *)&esp_transfer_array, msg_count * sizeof(rx_frame));
       }
     }
     vTaskDelay(CAN_RECEIVE_MESSAGE_TASK_RATE/portTICK_PERIOD_MS);  

@@ -19,7 +19,7 @@ void TaskInitiator (void)
     xTaskCreatePinnedToCore(CAN_Transmit_Message_Task,          "CAN_Transmit_Message_Task",        1000,                   NULL,               7,                      NULL,               0);                            
   #endif 
   #ifdef CAN_BRIDGE_WIRELESS
-    xTaskCreatePinnedToCore(ESP_NOW_Task,                       "ESP_NOW_Task",                     3000,                   NULL,               5,                      NULL,               0);                 
-    xTaskCreatePinnedToCore(CAN_Wireless_Bridge_Receive_Message_Task,                "CAN_Wireless_Bridge_Receive_Message_Task",                     3000,                   NULL,               7,                      NULL,               0);                 
+    xTaskCreatePinnedToCore(ESP_NOW_Task,                       "ESP_NOW_Task",                     3000,                   NULL,               7,                      NULL,               0);                 
+    xTaskCreatePinnedToCore(CAN_Wireless_Bridge_Receive_Message_Task,                "CAN_Wireless_Bridge_Receive_Message_Task",                     3000,                   NULL,               7,                      NULL,              0);                 
   #endif
 }
