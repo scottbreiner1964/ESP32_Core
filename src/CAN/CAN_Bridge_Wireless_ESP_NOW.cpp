@@ -9,7 +9,7 @@
 
 #define ESP_NOW_TASK_RATE 5 // task rate in milliseconds
 #define CHANNEL 9
-#define DATARATE WIFI_PHY_RATE_2M_L
+#define DATARATE WIFI_PHY_RATE_5M_L
 
  //#define RICHOCHET
 
