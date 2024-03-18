@@ -60,7 +60,7 @@ void CAN_Wireless_Bridge_Receive_Message_Task (void * parameter)
           for (i = 0; i < num_queue_items; i++)
           {
             xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 0);
-            memcpy(&(esp_transfer_array[msg_count * sizeof(rx_frame)]), (uint8_t *)&rx_frame, sizeof(rx_frame) - 8);
+            memcpy(&(esp_transfer_array[msg_count * sizeof(rx_frame)]), (uint8_t *)&rx_frame, sizeof(rx_frame));
             msg_count++;
           }
           esp_now_send(0, (uint8_t *)&esp_transfer_array, msg_count * sizeof(rx_frame));
